@@ -9,7 +9,7 @@ from torchvision.transforms import ToTensor
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-class NeuralNet(nn.Module):
+class DNN(nn.Module):
 
     def __init__(self):
         super().__init__()
@@ -61,7 +61,7 @@ def test(model, dataloader, loss_fn):
 def __train_test():
 
     # model
-    model = NeuralNet().to(DEVICE)
+    model = DNN().to(DEVICE)
 
     # hyper-parameters
     lr = 1e-3  # learning rate, 0.001
@@ -86,6 +86,34 @@ def __train_test():
         train(model, train_dataloader, loss_fn, optimizer)
         test(model, test_dataloader, loss_fn)
     print("Done.")
+
+    # savaing model
+    pth = "dnn.pth"
+    torch.save(model.state_dict(), pth)
+    print(f"Saved model: {pth}")
+
+    # load model and test it
+    classes = [
+        "T-shirt/top",
+        "Trouser",
+        "Pullover",
+        "Dress",
+        "Coat",
+        "Sandal",
+        "Shirt",
+        "Sneaker",
+        "Bag",
+        "Ankle boot",]
+
+    model = DNN()
+    model.load_state_dict(torch.load(pth))
+    model.eval()
+
+    X, y = test_data[0]
+    with torch.no_grad():
+        pred = model(X)
+        y_, y = classes[pred[0].argmax(0)], classes[y]
+        print(f"Predicted: {y_}, Actual: {y}")
 
 
 if __name__ == "__main__":
