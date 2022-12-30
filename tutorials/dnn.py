@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch import nn
 from torch import optim
@@ -88,7 +90,9 @@ def __train_test():
     print("Done.")
 
     # savaing model
-    pth = "dnn.pth"
+    if not os.path.exists("./pth"):
+        os.mkdir("./pth")
+    pth = "./pth/dnn.pth"
     torch.save(model.state_dict(), pth)
     print(f"Saved model: {pth}")
 
